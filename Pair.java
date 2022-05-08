@@ -1,0 +1,33 @@
+package Spe_Final_Source;
+
+public class Pair<T1, T2>{
+	private T1 mFirst;
+	private T2 mSecond;
+	
+	public Pair(T1 first, T2 second) {
+		this.mFirst = first;
+		this.mSecond = second;
+	}
+	
+
+	public T1 getFirst() {
+		return this.mFirst;
+	}
+	
+ 
+	public T2 getSecond() {
+		return this.mSecond;
+	}
+
+	
+	public boolean equals(T1 first, T2 second) {
+		return (first.equals(this.mFirst) && second.equals(this.mSecond)); 
+	}
+	
+	
+ @Override
+	public String toString() {
+		return "< " + mFirst.toString() + ", " + mSecond.toString() + " >";
+	}
+
+}
