@@ -1,3 +1,5 @@
+package Spe_Final_Source;
+
 import Spe_Final_Source.Edge;
 import Spe_Final_Source.Graph;
 import Spe_Final_Source.Node;
@@ -21,12 +23,10 @@ class FiniteAutomaton {
         this.transitions = itransitions;
 
         // add nodes in graph
-        for(Pair <String, String> p : transitions.keySet())
+        for(String state: istate_list)
         {
-            auto_graph.addNode(new Node(p.getFirst()));
-            for(String s: transitions.get(p))
-                auto_graph.addNode(new Node(s));
-        }
+            auto_graph.addNode(new Node(state));
+        } 
 
         // add edges in graph
 
@@ -73,8 +73,13 @@ class FiniteAutomaton {
         {
             if(!gfa_transitions.containsKey(new Pair <String, String>(end_state, "$")))
             {
+                //System.out.println("check");
                 ArrayList <String> empty = new ArrayList<>();
                 gfa_transitions.put(new Pair <String, String>(end_state, "$"), empty);
+            }
+            if(!gfa_transitions.containsKey(new Pair <String, String>(end_state, "$")))
+            {
+                //System.out.println("check");
             }
             gfa_transitions.get(new Pair <String, String> (end_state, "$")).add("gfa_end");
         }
@@ -90,10 +95,10 @@ class FiniteAutomaton {
         Node ns1 = new Node(s1);
         Node ns2 = new Node(s2);
         Edge e = new Edge(ns1, ns2);
-        String newtr = "";
+        String newtr = tr;
         if(this.auto_graph.getEdgeTransition().containsKey(e))
         {
-            newtr = "(" + newtr + "+" + this.auto_graph.getEdgeTransition().get(e) + ")";   
+            newtr = "(" + "(" + newtr + ")" + "+" + "(" + this.auto_graph.getEdgeTransition().get(e) + ")" + ")";   
         }
         if(newtr == "")
             this.auto_graph.addEdge(e, tr);
@@ -106,13 +111,14 @@ class FiniteAutomaton {
         this.state_list.remove(s);
         this.auto_graph.deleteNode(new Node(s));
     }
-    public String removeStates()
+    public void removeStates()
     {
-        String ans = "";
         while(this.state_list.size()>2)
         {
+            //System.out.println(state_list.size());
             for(String to_remove: this.getStates())
             {
+               System.out.println("Removed State:" + to_remove);
                 if((to_remove != "gfa_start")&&(to_remove!= "gfa_end"))
                 {
                     String mid = "";
@@ -120,13 +126,13 @@ class FiniteAutomaton {
                     if(this.auto_graph.getEdgeTransition().containsKey(new Edge(new Node(to_remove), new Node (to_remove))))
                     {
                         mid = "(" + this.auto_graph.getEdgeTransition().get(new Edge (new Node(to_remove), new Node(to_remove))) 
-                                + "*" + ")";
+                                + ")" + "*";
                     }
                     for(Node prev: this.auto_graph.getRevList().get(new Node(to_remove)))
                     {
                         if(prev.getlabel()!= to_remove)
                         {
-                            for(Node child: this.auto_graph.getRevList().get(new Node(to_remove)))
+                            for(Node child: this.auto_graph.getAdjList().get(new Node(to_remove)))
                             {
                                 if(child.getlabel()!= to_remove)
                                 {
@@ -142,6 +148,37 @@ class FiniteAutomaton {
                 }
             }
         }
+    }
+    public String getRE()
+    {
+        String ans = "";
+        FiniteAutomaton gfa = FiniteAutomaton.Nfa_to_Gfa(this);
+        gfa.removeStates();
+        ans = gfa.auto_graph.getEdgeTransition().get(new Edge(new Node ("gfa_start"), new Node ("gfa_end")));
         return ans;
+    }
+    public static void main(String[] args)
+    {
+        // test1
+        ArrayList <String> statelist1 = new ArrayList<>();
+        statelist1.add("A");
+        statelist1.add("B");
+        statelist1.add("C");
+        String startstate1 = "A";
+        ArrayList <String> finish_states1 = new ArrayList<>();
+        finish_states1.add("B");
+        finish_states1.add("C");
+        HashMap <Pair <String, String>, ArrayList <String>> transitions1 = new HashMap<>();
+        ArrayList <String> t1 = new ArrayList<>();
+        ArrayList <String> t2 = new ArrayList<>();
+        t1.add("B");
+        t2.add("C");
+        transitions1.put(new Pair <String, String> ("A", "a"), t1);
+        transitions1.put(new Pair <String, String> ("B", "b"), t2);
+
+        FiniteAutomaton nfa1 = new FiniteAutomaton(statelist1, startstate1, finish_states1, transitions1);
+
+        System.out.println(nfa1.getRE());
+
     }
 }

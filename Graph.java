@@ -37,20 +37,27 @@ public class Graph{
     
     public void addNode(Node n)
     {
+        //System.out.println(n.getlabel());
         NodeSet.add(n);
         Adj_list.put(n, new HashSet <Node> ());
         Rev_Adj_list.put(n, new HashSet <Node> ());
+       // System.out.println(Adj_list.get(n).size());
+       // System.out.println(Rev_Adj_list.get(n).size());
     }
 
     public void addEdge(Edge e, String tr)
     {
         Edge_expr.put(e, tr);
+       // System.out.println("");
+      //  System.out.println(e.gettail());
+     //   System.out.println(e.gethead());
         Adj_list.get(e.gettail()).add(e.gethead());
         Rev_Adj_list.get(e.gethead()).add(e.gettail());
     }
 
     public void deleteNode(Node n)
     {
+        HashMap <Node, HashSet <Node>> Adj_list1 = new HashMap<>(Adj_list);
         NodeSet.remove(n);
         Adj_list.remove(n);
 
@@ -58,6 +65,13 @@ public class Graph{
         {
             Adj_list.get(n_it).remove(n);
         }
+
+        for(Node n_it: Adj_list1.get(n))
+        {
+            Rev_Adj_list.get(n_it).remove(n);
+        }
+
+        Rev_Adj_list.remove(n);
 
     }
 
